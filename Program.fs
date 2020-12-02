@@ -13,4 +13,6 @@ let main argv =
 
     printfn "Day 1 part 1 : %d" day1Part1
 
+    printfn "Day 2 part 2 : %d" <| Day01.CalculatePart2
+
     0
