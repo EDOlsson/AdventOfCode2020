@@ -1,15 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <RootNamespace>_2020</RootNamespace>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>_2020</RootNamespace>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Include="day01.fs" />
     <Compile Include="day02.fs" />
+    <Compile Include="day03.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
-
 </Project>
