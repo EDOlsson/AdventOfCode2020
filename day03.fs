@@ -17,19 +17,56 @@ let private evaulatePosition (course : string[]) location =
     let row = course.[location.Y]
 
     let column = location.X % row.Length
-    row.[column]
+    let spot = row.[column]
 
-let private advancePosition angle oldLocation =
-    { oldLocation with X = oldLocation.X + angle.HorizontalDelta; Y = oldLocation.Y + angle.VerticalDelta }
+    spot
+
+let private evaluateCourseAtAngle (course : string[]) angle =
+    let positions = [ for i in 0 .. course.Length -> { X = angle.HorizontalDelta * i; Y = angle.VerticalDelta * i } ]
+
+    positions
+    |> List.takeWhile (fun pos -> pos.Y < course.Length)
+    |> List.map (fun pos -> evaulatePosition course pos)
+    |> List.filter (fun c -> c = '#')
+    |> List.length
 
 let CalculatePart1 =
     let course = readInput
 
     let angle = { HorizontalDelta = 3; VerticalDelta = 1 }
 
-    let positions = [ for row in 1..course.Length - 1 -> { X = angle.HorizontalDelta * row; Y = angle.VerticalDelta * row } ]
+    evaluateCourseAtAngle course angle
 
-    positions
-    |> List.map (fun pos -> evaulatePosition course pos)
-    |> List.filter (fun c -> c = '#')
-    |> List.length
+let CalculatePart2 =
+    let course = readInput
+    let angles = [ { HorizontalDelta = 1; VerticalDelta = 1 }
+                   { HorizontalDelta = 3; VerticalDelta = 1 }
+                   { HorizontalDelta = 5; VerticalDelta = 1 }
+                   { HorizontalDelta = 7; VerticalDelta = 1 }
+                   { HorizontalDelta = 1; VerticalDelta = 2 } ]
+
+    (List.map ((fun a -> evaluateCourseAtAngle course a) >> (fun count -> (int64 count))) angles)
+    |> List.reduce ( * )
+
+let TestPart2 =
+    let course = [|"..##......."
+                   "#...#...#.."
+                   ".#....#..#."
+                   "..#.#...#.#"
+                   ".#...##..#."
+                   "..#.##....."
+                   ".#.#.#....#"
+                   ".#........#"
+                   "#.##...#..."
+                   "#...##....#"
+                   ".#..#...#.#" |]
+
+    let angles = [ { HorizontalDelta = 1; VerticalDelta = 1 }
+                   { HorizontalDelta = 3; VerticalDelta = 1 }
+                   { HorizontalDelta = 5; VerticalDelta = 1 }
+                   { HorizontalDelta = 7; VerticalDelta = 1 }
+                   { HorizontalDelta = 1; VerticalDelta = 2 } ]
+
+    angles
+    |> List.map (fun a -> evaluateCourseAtAngle course a)
+    |> List.reduce ( * )

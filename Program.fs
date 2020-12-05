@@ -10,4 +10,6 @@ let main argv =
     // printfn "Day 2 part 2 : %d" <| Day02.CalculatePart2
 
     printfn "Day 3 part 1 : %d" <| Day03.CalculatePart1
+    printfn "Day 3 part 2 (test) : %d" <| Day03.TestPart2
+    printfn "Day 3 part 2 : %d" <| Day03.CalculatePart2
     0
