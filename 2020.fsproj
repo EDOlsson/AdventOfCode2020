@@ -5,6 +5,7 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="MyRegex.fs" />
     <Compile Include="day01.fs" />
     <Compile Include="day02.fs" />
     <Compile Include="day03.fs" />

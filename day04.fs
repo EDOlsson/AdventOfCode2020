@@ -1,5 +1,7 @@
 module Day04
 
+open MyRegEx
+
 type private PassportCategory =
     | BirthYear
     | IssueYear
@@ -58,12 +60,12 @@ let private parsePassport ( passportEntry : string ) =
                     |> Array.map parsePassportCategory
     { Values = entries }
 
-let private validatePassport passport =
-    let hasCategory values category =
+let private hasCategory values category =
         let entry = values |> Array.filter (fun v -> v.Category = category)
         let length = Array.length entry
         length > 0
-    
+
+let private validatePassport passport =
     let hasBirthYear = hasCategory passport.Values BirthYear
     let hasIssueYear = hasCategory passport.Values IssueYear
     let hasExpiryYear = hasCategory passport.Values ExpireYear
@@ -106,3 +108,93 @@ let TestPart1 =
     |> List.map validatePassport
     |> List.filter id
     |> List.length
+
+let private validatePassportPart2 passport =
+    let validateYear minYear maxYear (year : string) =
+        let (isValidNumber, yearValue) = System.Int32.TryParse(year)
+        match (isValidNumber, yearValue) with
+        | (false, _) -> false
+        | (true, theYear) -> minYear <= theYear && theYear <= maxYear
+
+    let isBirthYearValid = validateYear 1920 2002
+    let isIssueYearValid = validateYear 2010 2020
+    let isExpiryYearValid = validateYear 2020 2030
+
+    let validateHeight height =
+        let heightPattern = @"(\d+)(cm|in)"
+        match height with
+        | InterpretedMatch heightPattern [_; parsedHeight; units] ->
+            let (isValidNumber, heightValue) = System.Int32.TryParse(parsedHeight.Value)
+            if isValidNumber then
+                if units.Value = "cm"
+                then
+                    150 <= heightValue && heightValue <= 193
+                else
+                    59 <= heightValue && heightValue <= 76
+            else
+                false
+        | _ -> false
+
+    let validateHairColor hairColor =
+        let hairColorPattern = "#[0-9|a-f]{6}"
+        match hairColor with
+        | InterpretedMatch hairColorPattern [_] -> true
+        | _ -> false
+
+    let validateEyeColor eyeColor =
+        match eyeColor with
+        | "amb" -> true
+        | "blu" -> true
+        | "brn" -> true
+        | "gry" -> true
+        | "grn" -> true
+        | "hzl" -> true
+        | "oth" -> true
+        | _ -> false
+    
+    let validatePassportId passportId =
+        let passportIdPattern = "[0-9]{9}"
+        match passportId with
+        | InterpretedMatch passportIdPattern [ _ ] -> true
+        | _ -> false
+
+    let passportValue passport category =
+        let value = passport.Values |> Array.filter (fun v -> v.Category = category) |> Array.head
+        value.Value
+
+    let passportHasCategory = hasCategory passport.Values
+
+    let checkPassportCategory passport category validateCategory =
+        let isValid = passportHasCategory category && validateCategory (passportValue passport category)
+        if not isValid then printf "[X] %A" category else printf "."
+        isValid
+
+    let checkThisPassport = checkPassportCategory passport
+
+    let printPassport passport =
+        passport.Values
+        |> Array.sortBy (fun p -> p.Category)
+        |> Array.iter (fun p -> printf "%A: %s  " p.Category p.Value)
+
+    printPassport passport
+
+    let isPassportValid = checkThisPassport BirthYear isBirthYearValid &&
+                          checkThisPassport IssueYear isIssueYearValid &&
+                          checkThisPassport ExpireYear isExpiryYearValid &&
+                          checkThisPassport Height validateHeight &&
+                          checkThisPassport HairColor validateHairColor &&
+                          checkThisPassport EyeColor validateEyeColor &&
+                          checkThisPassport PassportId validatePassportId
+    
+    printfn ""
+
+    isPassportValid
+
+let CalculatePart2 =
+    let combinedLines = combineInputLines readInput
+    let passports = List.map parsePassport combinedLines
+
+    passports
+    |> List.map validatePassportPart2
+    |> List.filter id
+    |> List.length      // outputs 148, but 147 is the answer. Not sure where the off-by-one error is
