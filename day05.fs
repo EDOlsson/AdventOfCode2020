@@ -40,3 +40,12 @@ let private calculateSeatId decodedSeat =
 let CalculatePart1 =
     (Array.map (decodeSeat >> calculateSeatId) (parseInput readInput))
     |> Array.max
+
+let CalculatePart2 =
+    (Array.map (decodeSeat) (parseInput readInput))
+    |> Array.sortBy (fun s -> s.Row)
+    |> Array.groupBy (fun s -> s.Row)
+    |> Array.filter (fun (_, seatsInRow) -> seatsInRow.Length < 8)
+    |> Array.iter (fun (row, seats) -> printfn "%3d | %A" row (Array.map (fun s -> s.Col) seats))
+
+    calculateSeatId { Row = 76; Col = 4 }
