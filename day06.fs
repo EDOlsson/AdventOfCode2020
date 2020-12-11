@@ -29,3 +29,17 @@ let CalculatePart1 =
     readAndParseInput
     |> List.map coalesceGroupAnswers
     |> List.sumBy (fun s -> s.Count)
+
+let coalesceGroupAnswers2 (answerGroup : string list) =
+    let createSet (answers : string) =
+        answers
+        |> Seq.fold (fun letters c -> Set.add c letters) Set.empty<char>
+
+    answerGroup
+    |> List.map createSet
+    |> List.reduce (Set.intersect)
+
+let CalculatePart2 =
+    readAndParseInput
+    |> List.map coalesceGroupAnswers2
+    |> List.sumBy (fun s -> s.Count)
